@@ -1,0 +1,25 @@
+{
+  "snapshot_retrieved": "2026-11-02",
+  "notes": "July transaction file supplied by owner; lookup CSVs downloaded from official current endpoints, not historical July versions.",
+  "files": [
+    {
+      "filename": "lookup_item.csv",
+      "sha256": "c93f5b291f7de310da3f1c6f81a4f077b4456fb33f98dca4d3628a2f9ac47b64",
+      "bytes": 56042,
+      "url": "https://storage.data.gov.my/pricecatcher/lookup_item.csv"
+    },
+    {
+      "filename": "lookup_premise.csv",
+      "sha256": "484356b68cf3dd2d0e9e0dd731ce2ab629a2e71de3307534e7aac94daa822377",
+      "bytes": 160509,
+      "url": "https://storage.data.gov.my/pricecatcher/lookup_premise.csv",
+      "transformation": "readr CSV reserialisation retaining premise_code, premise_type, state, district; premise and address removed"
+    },
+    {
+      "filename": "pricecatcher_2026-07.csv",
+      "sha256": "2904d24f5b113751cf2dc58995e52779f137f4d9f4a65639acd1ec98ddfc15f5",
+      "bytes": 47001357,
+      "url": "https://storage.data.gov.my/pricecatcher/pricecatcher_2026-07.csv"
+    }
+  ]
+}
