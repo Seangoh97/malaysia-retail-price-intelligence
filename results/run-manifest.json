@@ -1,0 +1,60 @@
+{
+  "month": "2026-07",
+  "created_utc": "2026-11-01 17:22:51 UTC",
+  "inputs": [
+    {
+      "path": "data/raw/pricecatcher_2026-07.csv",
+      "sha256": "2904d24f5b113751cf2dc58995e52779f137f4d9f4a65639acd1ec98ddfc15f5",
+      "bytes": 47001357
+    },
+    {
+      "path": "data/raw/lookup_item.csv",
+      "sha256": "c93f5b291f7de310da3f1c6f81a4f077b4456fb33f98dca4d3628a2f9ac47b64",
+      "bytes": 56042
+    },
+    {
+      "path": "data/raw/lookup_premise.csv",
+      "sha256": "484356b68cf3dd2d0e9e0dd731ce2ab629a2e71de3307534e7aac94daa822377",
+      "bytes": 160509
+    }
+  ],
+  "audit": {
+    "raw_rows": 1815849,
+    "invalid_price_rows": 0,
+    "unmatched_items": 25423,
+    "unmatched_premises": 0,
+    "retained_retail_rows": 1624094,
+    "excluded_rows": 191755
+  },
+  "model_rows": 185143,
+  "clusters": 2110,
+  "development_rows": 116161,
+  "item_count": 9,
+  "training_cutoff": "2026-07-24",
+  "adjusted_R2": 0.8333,
+  "extreme_residuals": 265,
+  "validation": [
+    {
+      "split": "Later dates / known premises",
+      "rows": 35129,
+      "premises": 1683,
+      "model_log_MAE": 0.1988,
+      "baseline_log_MAE": 0.2153,
+      "model_log_RMSE": 0.2596,
+      "baseline_log_RMSE": 0.2877,
+      "model_median_abs_percentage_error": 14.741,
+      "baseline_median_abs_percentage_error": 17.8572
+    },
+    {
+      "split": "Later dates / held-out premises",
+      "rows": 7904,
+      "premises": 412,
+      "model_log_MAE": 0.1935,
+      "baseline_log_MAE": 0.2066,
+      "model_log_RMSE": 0.2496,
+      "baseline_log_RMSE": 0.2747,
+      "model_median_abs_percentage_error": 14.4376,
+      "baseline_median_abs_percentage_error": 17.4488
+    }
+  ]
+}
