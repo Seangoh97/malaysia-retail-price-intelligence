@@ -1,0 +1,17 @@
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+.Renviron
+.env
+.env.*
+.DS_Store
+renv/library/
+renv/staging/
+results/scored-*.csv
+*.rar
+*.mp4
+*2026-08*
+*Assignment*.pdf
+
+renv/local/
