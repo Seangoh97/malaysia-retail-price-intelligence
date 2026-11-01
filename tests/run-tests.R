@@ -1,0 +1,35 @@
+source('R/core.R')
+fails<-function(expr,pattern){e<-tryCatch({force(expr);NULL},error=identity);assert(inherits(e,'error')&&grepl(pattern,conditionMessage(e)),paste('Expected failure:',pattern))}
+# Missing combinations must never be accepted even when marginal coverage exists.
+grid<-expand.grid(item_code=1:2,format=format_names,region=c('Peninsular Malaysia','East Malaysia'),rep=1:30,stringsAsFactors=FALSE)
+grid$premise_code<-rep(1:3,length.out=nrow(grid))
+grid<-grid[!(grid$item_code==2 & grid$format=='Wet market' & grid$region=='East Malaysia'),]
+assert(identical(coverage_items(grid)$item_code,1L),'Incomplete ten-cell basket accepted')
+fails(check_key(data.frame(id=c(1,1)),'id'),'duplicate')
+fails(check_columns(data.frame(a=1),'price','Fixture'),'missing columns')
+b<-readRDS('results/model.rds')
+q<-data.frame(item_code=b$items$item_code[1],format='Hypermarket',region='Peninsular Malaysia',price=10)
+s<-benchmark(b,q)
+assert(all(is.finite(s$benchmark_geometric_price))&&s$mean_CI_low<=s$benchmark_geometric_price&&s$mean_CI_high>=s$benchmark_geometric_price,'Invalid benchmark CI')
+q$price<-s$benchmark_geometric_price;s2<-benchmark(b,q)
+assert(abs(s2$quote_vs_benchmark_pct)<1e-10,'Benchmark equality calculation failed')
+q$price<-q$price*2;assert(abs(benchmark(b,q)$quote_vs_benchmark_pct-100)<1e-8,'Price ratio calculation failed')
+q$price<-0;fails(benchmark(b,q),'positive');q$price<-10
+q$item_code<-999999;fails(benchmark(b,q),'Unsupported item')
+q$item_code<-b$items$item_code[1];q$format<-'Restaurant';fails(benchmark(b,q),'Unsupported retail')
+v<-readr::read_csv('results/validation.csv',show_col_types=FALSE)
+assert(nrow(v)==2&&all(v$rows>0)&&all(is.finite(v$model_log_MAE)),'Validation outputs incomplete')
+x<-readr::read_csv('results/benchmarks.csv',show_col_types=FALSE)
+assert(nrow(x)==nrow(b$items)*10 && !anyNA(x$quotes)&&all(x$premises>=3),'Output cell support failed')
+# Stored covariance must be symmetric and positive semidefinite to numerical tolerance.
+assert(max(abs(b$vcov-t(b$vcov)))<1e-8 && min(eigen(b$vcov,symmetric=TRUE)$values)> -1e-8,'Invalid cluster covariance')
+cat('All checks passed: coverage, schema, duplicate keys, benchmark math, invalid quotes, output support, validation and covariance.\n')
+# Verify clustered covariance against the independent closed-form sandwich.
+set.seed(71)
+g<-rep(1:40,each=5);z<-rnorm(length(g));u<-rnorm(40)[g]+rnorm(length(g))
+fixture<-lm((2+z+u)~z);X<-model.matrix(fixture);e<-residuals(fixture)
+scores<-rowsum(X*as.numeric(e),g);bread<-solve(crossprod(X));n<-nrow(X);k<-ncol(X);G<-length(unique(g))
+manual<-bread%*%crossprod(scores)%*%bread * ((n-1)/(n-k)) * (G/(G-1))
+package<-sandwich::vcovCL(fixture,cluster=g,type='HC1',cadjust=TRUE)
+assert(max(abs(manual-package))<1e-10,'Cluster covariance formula mismatch')
+cat('Independent cluster covariance formula check passed.\n')
